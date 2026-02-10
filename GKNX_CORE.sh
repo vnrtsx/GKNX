@@ -1,48 +1,36 @@
 #!/system/bin/sh
-# ===========================================================
-# PROJECT : GKNX (Global Klepon Nexus)
-# MODULE  : GKNX_CORE (Open Edition)
-# OWNER   : Gi
-# ===========================================================
+# GKNX_CORE - Monster Edition
 
 clear
 echo "==========================================="
-echo "       GKNX_CORE : OPEN LOADER             "
+echo "       GKNX_CORE : MONSTER LOADER          "
 echo "==========================================="
-echo "[*] Status      : UNLOCKED (Dev Mode)"
-echo "[*] Device RAM  : 8191 MB (MONSTER)"
+echo "[*] Device RAM : 8191 MB"
 echo "-------------------------------------------"
 
-# Memaksa input dari terminal (keyboard) agar tidak terlewati
+# Memaksa input dari keyboard
 exec < /dev/tty
 
-echo -n "Masukkan Nama Package: "
+echo -n "[?] Masukkan Nama Package: "
 read PKG_NAME
 
-if [ -z "$PKG_NAME" ]; then
-    echo "[!] Error: Nama package wajib diisi!"
-    exit 1
-fi
-
-echo -n "Jumlah Client: "
+echo -n "[?] Jumlah Client (Angka): "
 read MAX_CLIENT
 
-# ENGINE EKSEKUSI
-START_APP() {
-    ID=$1
-    echo "[+] Membuka Client-$ID..."
-    am force-stop $PKG_NAME > /dev/null 2>&1
-    sleep 1
-    monkey -p $PKG_NAME -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
-    echo "[✔] Client-$ID Berhasil Aktif."
-    sleep 2
-}
+# Validasi Angka agar seq tidak error
+if ! [ "$MAX_CLIENT" -eq "$MAX_CLIENT" ] 2>/dev/null; then
+  echo "[!] ERROR: Jumlah client harus berupa ANGKA!"
+  exit 1
+fi
 
 echo "-------------------------------------------"
-echo "[*] Memproses $MAX_CLIENT Client untuk $PKG_NAME"
+echo "[*] Memulai $MAX_CLIENT Client untuk $PKG_NAME..."
 
 for i in $(seq 1 $MAX_CLIENT); do
-    START_APP $i
+    echo "[+] Opening Client-$i..."
+    am force-stop $PKG_NAME > /dev/null 2>&1
+    monkey -p $PKG_NAME -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
+    sleep 2
 done
 
 echo "-------------------------------------------"
