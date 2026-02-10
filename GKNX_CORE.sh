@@ -1,59 +1,54 @@
 #!/system/bin/sh
 # ===========================================================
 # PROJECT : GKNX (Global Klepon Nexus)
-# MODULE  : GKNX_CORE (Dynamic Package Loader)
+# MODULE  : GKNX_CORE (Open Edition)
 # OWNER   : Gi
 # ===========================================================
 
-# 1. PENGAMANAN HWID (Lock ke Monster RAM 8GB milik Gi)
-MY_HWID="293c734343840d8108"
-CURRENT_ID=$(settings get secure android_id)
-
-if [ "$CURRENT_ID" != "$MY_HWID" ]; then
-    echo "ERROR: HWID TIDAK TERDAFTAR!"
-    echo "ID Anda: $CURRENT_ID"
-    exit 1
-fi
-
 clear
 echo "==========================================="
-echo "       GKNX_CORE : DYNAMIC LOADER          "
+echo "       GKNX_CORE : OPEN LOADER             "
 echo "==========================================="
-echo "[*] HWID Status : VERIFIED"
-echo "[*] Device RAM  : 8191 MB"
+echo "[*] Status      : UNLOCKED (Development Mode)"
+echo "[*] Device RAM  : 8191 MB (MONSTER)"
 echo "-------------------------------------------"
 
-# 2. INPUT NAMA PACKAGE
-echo -n "Masukkan Nama Package (contoh: com.android.chrome): "
+# 1. INPUT MANUAL
+echo -n "Masukkan Nama Package (e.g. com.android.chrome): "
 read PKG_NAME
 
+# Validasi jika input kosong
 if [ -z "$PKG_NAME" ]; then
-    echo "[!] Error: Nama package tidak boleh kosong!"
+    echo "[!] Error: Nama package wajib diisi!"
     exit 1
 fi
 
-# 3. INPUT JUMLAH CLIENT
-# Mengingat RAM 8GB, kamu bisa menjalankan banyak sekaligus
-echo -n "Berapa banyak client yang ingin dijalankan? (Max 8): "
+echo -n "Jumlah Client yang ingin dibuka: "
 read MAX_CLIENT
 
-# 4. EKSEKUSI FARMING
-echo "-------------------------------------------"
-echo "[*] Memulai GKNX Nexus untuk: $PKG_NAME"
-
+# 2. ENGINE EKSEKUSI
 START_APP() {
     ID=$1
     echo "[+] Membuka Client-$ID..."
-    # Menggunakan Activity Manager untuk menjalankan package
+    
+    # Auto-Killer agar RAM tetap optimal
+    am force-stop $PKG_NAME > /dev/null 2>&1
+    sleep 1
+    
+    # Menjalankan aplikasi
     monkey -p $PKG_NAME -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
+    
+    echo "[✔] Client-$ID Berhasil Aktif."
     sleep 2
 }
+
+echo "-------------------------------------------"
+echo "[*] Memproses $MAX_CLIENT Client untuk $PKG_NAME"
 
 for i in $(seq 1 $MAX_CLIENT); do
     START_APP $i
 done
 
 echo "-------------------------------------------"
-echo "[✔] $MAX_CLIENT Client Berhasil Dimuat."
+echo "        PROSES GKNX SELESAI                "
 echo "==========================================="
-
